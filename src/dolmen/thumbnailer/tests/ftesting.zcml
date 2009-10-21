@@ -1,0 +1,35 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:grok="http://namespaces.zope.org/grok">
+
+  <include package="zope.app.zcmlfiles" file="meta.zcml" />
+  <include package="zope.securitypolicy" file="meta.zcml" />
+
+  <include package="zope.app.zcmlfiles" />
+  <include package="zope.app.authentication" />
+  <include package="dolmen.thumbnailer" />
+
+  <securityPolicy
+      component="zope.securitypolicy.zopepolicy.ZopeSecurityPolicy"
+      />
+
+  <principal
+      id="zope.jason"
+      title="Jason"
+      login="jason"
+      password="pwd"
+      />
+
+  <principal
+      id="zope.judith"
+      title="Judith"
+      login="judith"
+      password="pwd"
+      />
+
+  <grant
+      permission="zope.View"
+      principal="zope.judith"
+      />
+
+</configure>

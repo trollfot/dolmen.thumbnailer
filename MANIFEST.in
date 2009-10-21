@@ -1,0 +1,2 @@
+recursive-include src/dolmen/thumbnailer *.txt *.py *.zcml *.jpg
+recursive-include docs *.txt
