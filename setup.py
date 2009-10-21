@@ -9,6 +9,7 @@ history = open(join('docs', 'HISTORY.txt')).read()
 install_requires = [
     'setuptools',
     'grokcore.component',
+    'dolmen.file',
     'dolmen.content',
     'dolmen.storage',
     'PILwoTk >= 1.1.6.4',
@@ -21,6 +22,7 @@ tests_require = install_requires + [
     'zope.testing',
     'zope.app.testing',
     'zope.app.zcmlfiles',
+    'zope.annotation',
     ]
 
 setup(name = name,

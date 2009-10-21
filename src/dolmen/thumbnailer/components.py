@@ -6,12 +6,13 @@ from PIL import Image
 from cStringIO import StringIO
 
 from zope.interface import Interface
-from zope.component import queryAdapter, getAdapter
+from zope.component import queryAdapter
+from zope.component.interfaces import ComponentLookupError
+from zope.app.file.interfaces import IFile
 from zope.schema.fieldproperty import FieldProperty
 
 from dolmen.storage import AnnotationStorage, IDelegatedStorage
 from dolmen.thumbnailer import IThumbnailer, IImageMiniaturizer
-
 
 
 class ScaleThumbnailer(grok.Adapter):
@@ -19,6 +20,12 @@ class ScaleThumbnailer(grok.Adapter):
     grok.implements(IThumbnailer)
     
     def scale(self, original, size):
+        if not Image.isImageType(original):
+            raise TypeError('Scaling can only occur using a PIL Image')
+
+        if not isinstance(size, tuple) or len(size) != 2:
+            raise ValueError('Size must be a (width, height) tuple')  
+        
         image = original.copy()
         image.thumbnail(size, Image.ANTIALIAS)
         thumbnailIO = StringIO()
@@ -39,10 +46,15 @@ class Miniaturizer(grok.Adapter):
     a set of thumbnails and write them on an annotation.
     """
     grok.context(Interface)
+    grok.implements(IImageMiniaturizer)
     grok.provides(IImageMiniaturizer)
     
     scales = FieldProperty(
         IImageMiniaturizer['scales']
+        )
+
+    storage = FieldProperty(
+        IImageMiniaturizer['storage']
         )
 
     factory = FieldProperty(
@@ -51,11 +63,18 @@ class Miniaturizer(grok.Adapter):
 
     def __init__(self, context):
         grok.Adapter.__init__(self, context)
-        self.storage = getAdapter(context, IDelegatedStorage, 'thumbnail')
+        storage = queryAdapter(context, IDelegatedStorage, 'thumbnail')
+        if storage is None:
+            raise ComponentLookupError
+        self.storage = storage
 
-    def __get__(self, name):
-        return self.storage.__get__(name)
-    get = __getitem__ = __get__
+
+    def __getitem__(self, name):
+        return self.storage.__getitem__(name)
+
+
+    def get(self, name, default=None):
+        return self.storage.get(name, default)
 
 
     def retrieve(self, scale, fieldname='image'):
@@ -65,7 +84,7 @@ class Miniaturizer(grok.Adapter):
 
     def delete(self, fieldname='image'):
         prefix = fieldname + '.'
-        for key in self.storage.keys():
+        for key in list(self.storage.keys()):
             if key.startswith(prefix):
                 del self.storage[key]
 
@@ -75,13 +94,19 @@ class Miniaturizer(grok.Adapter):
         sizes and stores them in an annotation.
         """
         original = getattr(self.context, fieldname, None)
+
         if not original:
             return False
+        
+        if IFile.providedBy(original):
+            data = StringIO(original.data)
+        else:
+            data = StringIO(str(original))
 
         # We open the original image.
-        data = StringIO(str(original))
+        # This raises an IOError if the data is not a valid image.
         image = Image.open(data)
-
+            
         # We fetch the base thumbnailer
         base = IThumbnailer(self.context, None)
 

@@ -4,6 +4,7 @@ import zope.app.file
 from zope.schema import Dict, Object
 from zope.interface import Interface
 from dolmen.field import GlobalClass
+from dolmen.storage import IStorage
 
 
 class IThumbnailer(Interface):
@@ -17,13 +18,20 @@ class IThumbnailer(Interface):
 
 class IImageMiniaturizer(Interface):
     """Defines component that handles the whole thumbnailing process.
-    """
+    """    
     factory = GlobalClass(
            required = True,
            title = u"Class used to persist the thumbnails",
            default = zope.app.file.file.File,
            interface = zope.app.file.interfaces.IFile
            )
+
+    storage = Object(
+        required = True,
+        title = u"Container used to store the thumbnails.",
+        default = None,
+        schema = IStorage
+        )
 
     scales = Dict(
         required = True,

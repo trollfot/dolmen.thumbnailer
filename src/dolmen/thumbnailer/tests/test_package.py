@@ -3,7 +3,9 @@ import unittest
 from zope.testing import doctest, module
 from zope.app.testing import functional
 
-ftesting_zcml = os.path.join(os.path.dirname(__file__), 'ftesting.zcml')
+TESTS_FOLDER = os.path.dirname(__file__)
+
+ftesting_zcml = os.path.join(TESTS_FOLDER, 'ftesting.zcml')
 FunctionalLayer = functional.ZCMLLayer(
     ftesting_zcml, __name__, 'FunctionalLayer',allow_teardown=True)
 
@@ -11,7 +13,9 @@ FunctionalLayer = functional.ZCMLLayer(
 def test_suite():
     """Testing suite.
     """
-    readme = functional.FunctionalDocFileSuite('../README.txt',
+    readme = functional.FunctionalDocFileSuite(
+        '../README.txt',
+        globs={'IMAGE_PATH': os.path.join(TESTS_FOLDER, 'python.jpg')},
         optionflags=(doctest.ELLIPSIS + doctest.NORMALIZE_WHITESPACE),
         )
 
