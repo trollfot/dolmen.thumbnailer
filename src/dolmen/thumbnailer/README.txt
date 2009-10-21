@@ -231,9 +231,9 @@ thumbnails generated for the given field::
 Access and security
 ===================
 
-The thumbnails are generated and stored. Logically, now, we want to
-publish them. In order to make them accessible through an URL,
-`dolmen.thumbnailer` provides a traverser based on
+The thumbnails are generated and stored. Logically, we now want to
+publish the thumbnails in order to make them accessible through a URL.
+The `dolmen.thumbnailer` provides a traverser based on
 `dolmen.file.access.FilePublisher`::
 
   >>> from zope.component import getMultiAdapter
@@ -247,11 +247,10 @@ publish them. In order to make them accessible through an URL,
   >>> traverser = getMultiAdapter((mycontext, request),
   ...                             ITraversable, name='thumbnail')
  
-
-The basic permission used to check the availability of the data, is
-`zope.View`. Here, we set up two principals to test this. 'jason' is a
-logged in member with no rights while 'judith' has the `zope.View`
-permission granted::
+The basic permission used to check the availability of the data is
+`zope.View`. We set up two principals to test this. 'jason' is a logged in
+member with no rights, while 'judith' has the `zope.View` permission
+granted::
 
   >>> import zope.security.management as security
   >>> from zope.security.testing import Principal, Participation
@@ -259,22 +258,22 @@ permission granted::
   >>> judith = Principal('zope.judith', 'Judith')
   >>> jason = Principal('zope.jason', 'Jason')
 
+We create the interaction and try to traverse to our thumbnail::
 
-We create the interaction and try to traverse to our binary data::
-
-    >>> security.newInteraction(Participation(jason))
-    >>> traverser.traverse('image.small')
-    Traceback (most recent call last):
-    ...
-    Unauthorized: image.small
-    >>> security.endInteraction()
+  >>> security.newInteraction(Participation(jason))
+  >>> traverser.traverse('image.small')
+  Traceback (most recent call last):
+  ...
+  Unauthorized: image.small
+  >>> security.endInteraction()
 
 It fails. An Unauthorized Error is raised. We now try with Judith::
 
-    >>> security.newInteraction(Participation(judith))
-    >>> traverser.traverse('image.small')
-    <dolmen.file.access.FilePublisher object at ...>
-    >>> security.endInteraction()
- 
-Our thumbnail is returned, wrapped in a `FilePublisher` view, ready to be
-rendered (see `dolmen.file` access documentation for more information).
+  >>> security.newInteraction(Participation(judith))
+  >>> traverser.traverse('image.small')
+  <dolmen.file.access.FilePublisher object at ...>
+  >>> security.endInteraction()
+
+Our thumbnail is returned, wrapped in a `FilePublisher` view, which is
+ready to be rendered (see `dolmen.file` access documentation for
+more information).
