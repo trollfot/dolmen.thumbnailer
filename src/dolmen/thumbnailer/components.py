@@ -4,11 +4,14 @@ import grokcore.component as grok
 
 from PIL import Image
 from cStringIO import StringIO
+
 from zope.interface import Interface
 from zope.component import queryAdapter, getAdapter
 from zope.schema.fieldproperty import FieldProperty
-from dolmen.imaging import IThumbnailer, IImageMiniaturizer
+
 from dolmen.storage import AnnotationStorage, IDelegatedStorage
+from dolmen.thumbnailer import IThumbnailer, IImageMiniaturizer
+
 
 
 class ScaleThumbnailer(grok.Adapter):
