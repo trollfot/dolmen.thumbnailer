@@ -11,6 +11,7 @@ from zope.component.interfaces import ComponentLookupError
 from zope.app.file.interfaces import IFile
 from zope.schema.fieldproperty import FieldProperty
 
+from dolmen.file import INamedFile
 from dolmen.storage import AnnotationStorage, IDelegatedStorage
 from dolmen.thumbnailer import IThumbnailer, IImageMiniaturizer
 
@@ -103,6 +104,10 @@ class Miniaturizer(grok.Adapter):
         else:
             data = StringIO(str(original))
 
+        # If we use a factory implementing INamedFile,
+        # we want named thumbnails
+        is_named = INamedFile.implementedBy(self.factory)
+
         # We open the original image.
         # This raises an IOError if the data is not a valid image.
         image = Image.open(data)
@@ -110,9 +115,9 @@ class Miniaturizer(grok.Adapter):
         # We fetch the base thumbnailer
         base = IThumbnailer(self.context, None)
 
-        for format, size in self.scales.iteritems():
+        for scale, size in self.scales.iteritems():
             # We get the component in charge of the thumbnail scaling.
-            custom = queryAdapter(self.context, IThumbnailer, name=format)
+            custom = queryAdapter(self.context, IThumbnailer, name=scale)
             if custom is not None:
                 thumbnailer = custom
             else:
@@ -124,9 +129,19 @@ class Miniaturizer(grok.Adapter):
 
             # We scale down the original image to the required size.
             data = thumbnailer.scale(image, size)
-            name = "%s.%s" % (fieldname, format)
-            self.storage[name] = self.factory(
-                data=data, contentType=image.format
-                )
+            name = "%s.%s" % (fieldname, scale)
+            format = image.format.lower()
+
+            if is_named is True:
+                self.storage[name] = self.factory(
+                    data=data,
+                    contentType='image/' + format,
+                    filename= "%s_%s.%s" % (fieldname, scale, format)
+                    )
+            else:
+                self.storage[name] = self.factory(
+                    data=data,
+                    contentType='image/' + format,
+                    )
          
         return True

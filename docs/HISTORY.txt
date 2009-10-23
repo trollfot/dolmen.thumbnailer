@@ -1,10 +1,13 @@
 Changelog
 =========
 
-0.2 (unreleased)
+0.2 (2009-10-23)
 ----------------
 
-* ...
+* Now thumbnails can be named, if the factory implements
+  `dolmen.file.INamedFile`.
+
+* Corrected a bug where the specified mimeType was not a valid one.
 
 
 0.1 (2009-10-21)
