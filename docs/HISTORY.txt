@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.2.1 (2009-10-25)
+------------------
+
+* Updated to the latest version of `dolmen.field`.
+
+
 0.2 (2009-10-23)
 ----------------
 

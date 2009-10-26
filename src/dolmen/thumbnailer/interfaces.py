@@ -23,7 +23,7 @@ class IImageMiniaturizer(Interface):
            required = True,
            title = u"Class used to persist the thumbnails",
            default = zope.app.file.file.File,
-           interface = zope.app.file.interfaces.IFile
+           schema = zope.app.file.interfaces.IFile
            )
 
     storage = Object(
