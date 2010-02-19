@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from os.path import join
 
 name = 'dolmen.thumbnailer'
-version = '0.3dev'
+version = '0.2.3'
 readme = open(join('src', 'dolmen', 'thumbnailer', 'README.txt')).read()
 history = open(join('docs', 'HISTORY.txt')).read()
 
@@ -13,7 +13,7 @@ install_requires = [
     'dolmen.content',
     'dolmen.storage',
     'dolmen.field>=0.3',
-    'PIL >= 1.1.6',
+    'PIL >= 1.1.7',
     'zope.app.file',
     'zope.schema',
     'zope.interface'
