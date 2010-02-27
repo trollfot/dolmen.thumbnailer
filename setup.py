@@ -2,28 +2,32 @@ from setuptools import setup, find_packages
 from os.path import join
 
 name = 'dolmen.thumbnailer'
-version = '0.2.3'
+version = '0.3'
 readme = open(join('src', 'dolmen', 'thumbnailer', 'README.txt')).read()
 history = open(join('docs', 'HISTORY.txt')).read()
 
 install_requires = [
-    'setuptools',
-    'grokcore.component',
-    'dolmen.file',
-    'dolmen.content',
-    'dolmen.storage',
-    'dolmen.field>=0.3',
     'PIL >= 1.1.7',
-    'zope.app.file',
+    'dolmen.field >= 0.3',
+    'dolmen.file',
+    'dolmen.storage',
+    'grokcore.component',
+    'setuptools',
+    'zope.component',
+    'zope.interface',
+    'zope.publisher',
     'zope.schema',
-    'zope.interface'
+    'zope.security',
     ]
 
-tests_require = install_requires + [
-    'zope.testing',
-    'zope.app.testing',
-    'zope.app.zcmlfiles',
+tests_require = [
     'zope.annotation',
+    'zope.container',
+    'zope.principalregistry',
+    'zope.securitypolicy',
+    'zope.site',
+    'zope.testing',
+    'zope.traversing',
     ]
 
 setup(name = name,

@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.3 (2010-02-27)
+----------------
+
+* Cleaned dependencies. We no longer have zope.app dependencies.
+
+* We now use ``dolmen.file.file.File` as base files for the thumbnails.
+
+
 0.2.3 (2010-02-19)
 ------------------
 

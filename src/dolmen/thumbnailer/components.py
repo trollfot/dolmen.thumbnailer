@@ -8,7 +8,6 @@ from cStringIO import StringIO
 from zope.interface import Interface
 from zope.component import queryAdapter
 from zope.component.interfaces import ComponentLookupError
-from zope.app.file.interfaces import IFile
 from zope.schema.fieldproperty import FieldProperty
 
 from dolmen.file import INamedFile
@@ -19,14 +18,14 @@ from dolmen.thumbnailer import IThumbnailer, IImageMiniaturizer
 class ScaleThumbnailer(grok.Adapter):
     grok.context(Interface)
     grok.implements(IThumbnailer)
-    
+
     def scale(self, original, size):
         if not Image.isImageType(original):
             raise TypeError('Scaling can only occur using a PIL Image')
 
         if not isinstance(size, tuple) or len(size) != 2:
-            raise ValueError('Size must be a (width, height) tuple')  
-        
+            raise ValueError('Size must be a (width, height) tuple')
+
         image = original.copy()
         image.thumbnail(size, Image.ANTIALIAS)
         thumbnailIO = StringIO()
@@ -49,18 +48,15 @@ class Miniaturizer(grok.Adapter):
     grok.context(Interface)
     grok.implements(IImageMiniaturizer)
     grok.provides(IImageMiniaturizer)
-    
+
     scales = FieldProperty(
-        IImageMiniaturizer['scales']
-        )
+        IImageMiniaturizer['scales'])
 
     storage = FieldProperty(
-        IImageMiniaturizer['storage']
-        )
+        IImageMiniaturizer['storage'])
 
     factory = FieldProperty(
-        IImageMiniaturizer['factory']
-        )
+        IImageMiniaturizer['factory'])
 
     def __init__(self, context):
         grok.Adapter.__init__(self, context)
@@ -69,26 +65,21 @@ class Miniaturizer(grok.Adapter):
             raise ComponentLookupError
         self.storage = storage
 
-
     def __getitem__(self, name):
         return self.storage.__getitem__(name)
-
 
     def get(self, name, default=None):
         return self.storage.get(name, default)
 
-
     def retrieve(self, scale, fieldname='image'):
         key = '%s.%s' % (fieldname, scale)
         return self.storage.get(key, None)
-
 
     def delete(self, fieldname='image'):
         prefix = fieldname + '.'
         for key in list(self.storage.keys()):
             if key.startswith(prefix):
                 del self.storage[key]
-
 
     def generate(self, fieldname='image'):
         """Generates a set of thumbnails from the available
@@ -98,8 +89,8 @@ class Miniaturizer(grok.Adapter):
 
         if not original:
             return False
-        
-        if IFile.providedBy(original):
+
+        if INamedFile.providedBy(original):
             data = StringIO(original.data)
         else:
             data = StringIO(str(original))
@@ -111,7 +102,7 @@ class Miniaturizer(grok.Adapter):
         # We open the original image.
         # This raises an IOError if the data is not a valid image.
         image = Image.open(data)
-            
+
         # We fetch the base thumbnailer
         base = IThumbnailer(self.context, None)
 
@@ -136,12 +127,10 @@ class Miniaturizer(grok.Adapter):
                 self.storage[name] = self.factory(
                     data=data,
                     contentType='image/' + format,
-                    filename= "%s_%s.%s" % (fieldname, scale, format)
-                    )
+                    filename="%s_%s.%s" % (fieldname, scale, format))
             else:
                 self.storage[name] = self.factory(
                     data=data,
-                    contentType='image/' + format,
-                    )
-         
+                    contentType='image/' + format)
+
         return True

@@ -98,7 +98,7 @@ overview::
   {'large': (700, 700), 'mini': (250, 250), 'small': (128, 128), 'preview': (400, 400), 'thumb': (150, 150)}
 
   >>> print IImageMiniaturizer['factory'].default
-  <class 'zope.app.file.file.File'>
+  <class 'dolmen.file.file.NamedFile'>
 
 
 Storage and adapter
@@ -150,10 +150,10 @@ to trigger their action.
 
 Let's add an image attribute to our content object::
 
-  >>> from zope.app.file import file
-  >>> mycontext.image = file.File(data=data)
+  >>> from dolmen.file import file
+  >>> mycontext.image = file.NamedFile(data=data)
   >>> mycontext.image
-  <zope.app.file.file.File object at ...>
+  <dolmen.file.file.NamedFile object at ...>
 
 Our image is persisted on our object, in an attribute called
 'image'. Let's trigger the thumbnails generation::
@@ -186,10 +186,10 @@ field name::
 
   >>> scale = miniaturizer.retrieve('mini', fieldname="image")
   >>> scale
-  <zope.app.file.file.File object at ...>
+  <dolmen.file.file.NamedFile object at ...>
 
 As we can see, the thumbnails data is wrapped in a
-`zope.app.file.file.File` object, which is the factory defined in your
+`dolmen.file.file.NamedFile` object, which is the factory defined in your
 default policy::
 
   >>> isinstance(scale, IImageMiniaturizer['factory'].default)
@@ -199,10 +199,10 @@ The Miniaturizer can fetch a thumbnail using a "fieldname.scalename"
 key::
 
   >>> print miniaturizer['image.mini']
-  <zope.app.file.file.File object at ...>
+  <dolmen.file.file.NamedFile object at ...>
 
   >>> print miniaturizer.get('image.small')
-  <zope.app.file.file.File object at ...>
+  <dolmen.file.file.NamedFile object at ...>
 
   >>> print miniaturizer.get('image.nonexistance')
   None

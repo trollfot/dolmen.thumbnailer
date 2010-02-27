@@ -2,11 +2,15 @@
    xmlns="http://namespaces.zope.org/zope"
    xmlns:grok="http://namespaces.zope.org/grok">
 
-  <include package="zope.app.zcmlfiles" file="meta.zcml" />
+  <include package="zope.component" file="meta.zcml" />
+  <include package="zope.security" file="meta.zcml" />
   <include package="zope.securitypolicy" file="meta.zcml" />
+  <include package="zope.principalregistry" file="meta.zcml" />
 
-  <include package="zope.app.zcmlfiles" />
-  <include package="zope.app.authentication" />
+  <include package="zope.annotation" />
+  <include package="zope.security" />
+  <include package="zope.securitypolicy" />
+  <include package="zope.principalregistry" />
   <include package="dolmen.thumbnailer" />
 
   <securityPolicy
